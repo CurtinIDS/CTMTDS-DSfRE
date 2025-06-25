@@ -1,0 +1,678 @@
+---
+title: "Extracting and Importing Data"
+format:
+  revealjs:
+    theme: [default, ../assets/custom.scss]
+    footer: "Data Science Transforming Maintenance"
+    logo: ../assets/logo.png
+    slide-number: true
+    show-side-number: all
+    include-after-body: ../assets/clean_title_page.html
+    echo: true
+    # argument for reveal-header
+    sc-sb-title: true
+title-slide-attributes:
+  data-background-image: ../assets/title_background.png
+  data-background-size: contain
+  data-background-opacity: "1.0"
+# reveal-header extension
+filters: 
+  - reveal-header
+# argument for reveal-header  
+slide-level: 2  
+jupyter: python3
+---
+
+## Objectives
+
+1. Understanding common data interchange formats
+2. Importing data from CSV and Excel 
+3. Understanding `Pandas` `DataFrame`
+
+    * Access data within data frame
+    * Select and filter data based on different criteria
+    * Combine datasets
+
+# Data interchange formats
+
+## Enterprise data systems
+
+* Data storage formats vary both between and within organisations depending on software and vendors
+* Specific domains often have standard data formats that are not well documented
+* Data might be distributed across an organisation
+
+. . .
+
+::: {.callout-note icon=false appearance=simple}
+Data analysis requires extracting data from these sources so that you can efficiently query, analyse, or plot.
+:::
+
+## Data interchange formats 
+
+::: {style="font-size: 85%;"}
+* A data interchange format lets you move data between systems. Ideally, this format:
+
+  * Is simple but flexible enough to represent your data
+  * Is fully standardised and there are no surprises or inconsistencies
+  * Ensures the values of types are unambiguous (e.g. as text, numbers, Booleans, dates, etc.)
+  * Is self-describing (you don't need to know context to understand the data)
+:::
+
+. . .
+
+::: {.callout-note icon=false appearance=simple}
+In practice, most interchange formats fall short of these goals and you will have to apply contextual and domain knowledge to ensure correctness of data.
+:::
+
+
+## Common interchange formats
+
+::: {style="font-size: 90%;"}
+* The most commonly used formats for tabular data are:
+
+  * CSV (Comma Separated Values)
+  * Apache Parquet
+  * Less common: Excel, SQLite
+
+* You might also encounter other non-tabular formats such as:
+
+  * JSON, XML, YAML, TOML
+
+  These formats are commonly used in time-series or 'unstructured' data
+:::
+
+# Importing data from CSV and Excel 
+
+## CSV 
+
+::: {.panel-tabset}
+
+### Advantages
+
+::: {style="font-size: 75%;"}
+* CSV is the most common interchange format for tabular data
+* It is the _lingua franca_ of import/export formats and is supported by most systems
+* CSV is very simple:
+  * It is a plain text file
+  * Each row contains a series of values separated by a delimiter (usually a comma)
+  * Each value can be quoted (`"...."`) and commas that appear inside a quote are ignored
+  * Quotes inside quoted values must be doubled up (`"This is ""my"" quote"`)
+  * The first row is typically used for column names
+:::
+
+### Example
+
+```{python}
+#| eval: false
+#| code-line-numbers: "1|2-3|4"
+Index,User Id,First Name,Last Name,Sex,Email,Phone,Date of birth,Job Title
+1,88F7B33d2bcf9f5,Shelby,Terrell,Male,elijah57@example.net,001-084-906-7849x73518,1945-10-26,Games developer
+2,f90cD3E76f1A9b9,Phillip,Summers,Female,bethany14@example.com,214.112.6044x4913,1910-03-24,Phytotherapist
+10,8e4FB470FE19bF0,Isaiah,Downs,Male,virginiaterrell@example.org,+1-511-372-1544x8206,1964-09-20,"Engineer, site"
+```
+
+### Disadvantages
+
+::: {style="font-size: 65%;"}
+* There is only no standard definition
+    * Different systems may implement their own variants and rules
+* The delimiter can change!
+    * Comma is most common, but some systems use a semicolon, tab, space, or ...
+    * Some implementations (e.g. Excel) will look for "Sep=," or "Sep=;" in the first row
+* There are no data types: everything is text
+    * Is a Boolean represented by Y/N or TRUE/FALSE or 1/0
+    * Dates can be 2024/07/13 or 13/07/2024 or 07/13/2024 (American order) or anything else
+    * Is "1234" a number or a string?
+* Plain text files do not specify the character encoding (is it ASCII, or UTF8, LATIN, or...?)
+:::
+
+### Notes
+
+::: {.callout-note icon=false}
+### Be careful!
+
+When using CSV, it is up to you to understand the data, their types, and their representation.
+:::
+
+:::
+
+## Importing CSV files into Python
+
+::: {.panel-tabset}
+
+### Introduction
+
+* Use [`pandas.read_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html) to read the CSV file into a Pandas `DataFrame`.
+* Pandas will make a lot of clever guesses about the format of the CSV including guessing the separator and the header row (but you need to check it guessed correctly!)
+
+### Raw text
+
+::: {style="font-size: 75%;"}
+
+```{python}
+#| echo: false
+with open("data/people-100.csv") as f:
+  for _, line in zip(range(10), f):
+    print(line.strip())
+```
+
+(100 rows)
+
+:::
+
+### Import
+
+::: {style="font-size: 70%;"}
+
+```{python}
+import pandas as pd
+
+data = pd.read_csv("data/people-100.csv", index_col="Index")
+```
+
+```{python}
+#| echo: false
+from IPython.display import display
+with pd.option_context('display.max_rows', 6):
+  display(data)
+```
+
+:::
+
+:::
+
+## Importing CSV: A painful example {.smaller}
+
+::: {.panel-tabset}
+
+### Raw data
+
+* Example: a CSV file from the Bureau of Meteorology website
+
+::: {style="font-size: 0.8em;"}
+
+```{python}
+# | echo: false
+with open("data/IDCJDW6111.202504.csv", encoding="latin_1") as f:
+    for _, line in zip(range(12), f):
+        print(line.strip())
+```
+
+:::
+
+### Text encoding
+
+* **First problem:** the text encoding is not UTF8
+
+```{.python}
+pd.read_csv("data/IDCJDW6111.202504.csv")
+```
+
+```{python}
+#| echo: false
+try:
+  pd.read_csv("data/IDCJDW6111.202504.csv")
+except Exception as e:
+  print("Exception:", e)
+```
+
+* Plain text files use an underlying encoding to the map a `byte` to a character. The most common encoding schemes are `ascii` and `utf8`
+* The BOM has used the older `latin_1` as the encoding scheme
+* `read_csv()` has a `encoding` keyword for setting the encoding scheme:
+
+```{python}
+#| eval: false
+pd.read_csv("data/IDCJDW6111.202504.csv", encoding="latin_1")
+```
+
+### Row offset
+
+* **Second problem:** the CSV has 8 rows of preamble
+
+```{.python}
+pd.read_csv("data/IDCJDW6111.202504.csv", encoding="latin_1")
+```
+
+```{python}
+#| echo: false
+try:
+  pd.read_csv("data/IDCJDW6111.202504.csv", encoding="latin_1")
+except Exception as e:
+  print("Exception", e)
+```
+
+* By default, `read_csv()` assumes the first row is the header, and the rest are the data
+* This CSV starts with one column but then on line 9 there are suddenly 22 columns!
+* We use `skiprows` keyword to ignore the preamble:
+
+```{python}
+#| eval: false
+pd.read_csv("data/IDCJDW6111.202504.csv", encoding="latin_1", skiprows=7)
+```
+
+### Final QA
+
+```{python}
+df = pd.read_csv("data/IDCJDW6111.202504.csv", encoding="latin_1", skiprows=7)
+```
+
+::: {style="font-size: 0.8em; "}
+
+```{python}
+#| echo: false
+from IPython.display import display
+with pd.option_context('display.max_rows', 2):
+  display(df)
+```
+
+:::
+
+::: {style="font-size: 0.8em; "}
+
+* The file is imported without errors, but we can do better. We could:
+
+* Use `index_col` to set `Date` as the index
+* Use `parse_dates` to parse `Date` as a `datetime` object (instead of a `string`)
+* Use `usecols` to remove the leading empty column
+
+:::
+
+### At last ...
+
+```{python}
+df = pd.read_csv(
+  "data/IDCJDW6111.202504.csv",
+  encoding="latin_1",
+  skiprows=7,
+  index_col="Date",
+  parse_dates=["Date"], # a list of columns to parse as dates
+  usecols=range(1, 22)  # use column index or name to include columns
+)
+```
+
+::: {style="font-size: 0.8em;"}
+
+```{python}
+#| echo: false
+from IPython.display import display
+with pd.option_context('display.max_rows', 4):
+  display(df)
+```
+
+:::
+
+:::
+
+## Exporting to CSV 
+
+```{.python}
+df.to_csv("path/to/file.csv")
+```
+
+* By default Pandas will:
+
+    * Use commas as the separation delimiter
+    * Place column names in the first row
+    * Use UTF8 text encoding
+    * Write the row index name as the first column
+
+* These are good defaults, but they can be overridden by passing keyword arguments to `.to_csv()` (see the [documentation](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html))
+
+## Parquet 
+
+::: {.panel-tabset style="font-size: 90%;"}
+
+### Introduction
+
+* Parquet is an excellent data interchange format because:
+
+  * It fixes the most common problems with CSV
+  * Columns are properly typed and the format is fully standardised
+  * It is fast, efficient and a good choice for big data
+
+### Importing
+
+* Use [`pandas.read_parquet()`](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_parquet.html) to read into a Pandas `DataFrame`:
+
+```{python}
+import pandas as pd
+
+df = pd.read_parquet("../data/backblaze.parquet")
+```
+
+```{python}
+#| echo: false
+from IPython.display import display
+with pd.option_context('display.max_rows', 4):
+  display(df)
+```
+
+
+### Exporting
+
+* Any Pandas `DataFrame` can be saved as a parquet file by using the [`to_parquet()`](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_parquet.html) method:
+
+```{python}
+#| eval: false
+import pandas as pd
+
+df.to_parquet("path/to/file.parquet")
+
+# Or with other options:
+
+df.to_parquet(
+  "path/to/file.parquet",
+  index=False         # Don't write the index to disk, e.g. if the index is just row numbers
+  compression="zstd"  # Choose the compression scheme to make files as small as possible
+)
+```
+
+:::
+
+# `Pandas` `DataFrame`
+
+## Python data types
+
+* Basic Python data types include `int`, `float`, `bool`, `list`, ...
+* More complex data types are required for storing data:
+  * How do we represent tables of data with rows and columns?
+  * How do we manage large vectors or matrices of numerical data?
+* The Python community has developed modules to extend existing functionality:
+  * `Pandas` provides `DataFrame` for tabular data
+  * `Numpy` provides `ndarray` for $n$-dimensional data
+
+
+## Pandas `DataFrame`
+
+A DataFrame is a 2D tabular data structure provided by the [`Pandas`](https://pandas.pydata.org/) library:
+
+* It is like an Excel spreadsheet made up of rows and columns (known as `Series`).
+* Columns are **strongly typed** but types may vary between columns (columns can be of different types)
+* There are many methods available to index, filter and modify a `DataFrame` and `Series`
+  * See this [useful cheatsheet](https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf)
+
+
+## `DataFrame`: First steps 
+
+```{python}
+#| echo: false
+df = pd.read_csv(
+    "data/people-100.csv", index_col="Index", parse_dates=["Date of birth"]
+)
+```
+
+::: {.panel-tabset style="font-size: 80%;"}
+
+### `info()`
+
+* Use `info()` to quickly understand your table:
+
+```{.python}
+df.info()
+```
+
+
+```{python}
+#| echo: false
+df.info()
+```
+
+
+### `len()` / `shape()`
+
+* `len()` and `shape()` give you information about the dimensionality of the data frame
+
+```{python}
+len(df)  # row count
+```
+
+```{python}
+df.shape  # (rows, columns)
+```
+
+
+### `head()` / `tail()`
+
+* Get the first or last $n$ rows of your table using `head()` or `tail()`.
+
+```{python}
+df.head(2)
+```
+
+```{python}
+df.tail(1)
+```
+
+### `value_counts()`
+
+* Get a quick summary of the unique values in a column:
+
+```{python}
+df["Sex"].value_counts()
+```
+
+:::
+
+
+## `DataFrame`: Indexing {.smaller}
+
+::: {.panel-tabset}
+
+### `iloc()`
+
+`iloc(rowindex, [column index])`: the `i` indicates integer-based indexing.
+
+::: {.columns}
+
+::: {.column width="55%"}
+
+**Example**: Get the first row
+
+::: {style="font-size: 0.8em;"}
+
+```{python}
+df.iloc[0]  # Or equivalently: data.iloc[0, :]
+```
+
+:::
+
+**Example**: Get the 4th row and 2nd column
+
+::: {style="font-size: 0.8em;"}
+
+```{python}
+df.iloc[3, 1]
+```
+
+:::
+
+:::
+
+::: {.column width="45%"}
+
+**Example**: Get the 3rd column
+
+```{python}
+df.iloc[:, 2]
+```
+:::
+
+:::
+
+### `loc()`
+
+`loc(row name, [column name])`
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+**Example**: Get row with index `1`
+
+```{python}
+df.loc[1]
+```
+
+**Example**: Get the value indexed as 4 from the `First Name` column
+
+```{python}
+df.loc[4, "First Name"]
+```
+
+:::
+
+::: {.column width="50%"}
+
+**Example**: Get the `Last Name` column
+
+```{python}
+df.loc[:, "Last Name"]
+# Also: data["Last Name"]
+```
+
+:::
+
+:::
+
+### Range indexing
+
+**Example**: Get a range of rows
+
+::: {style="font-size: 0.8em;"}
+
+```{python}
+df.iloc[3:5]
+```
+
+:::
+
+**Example**: Get a subset of the full table
+
+::: {.columns style="font-size: 0.8em;"}
+
+::: {.column width="50%"}
+
+```{python}
+df.iloc[4:10, 1:3]
+```
+:::
+::: {.column width="50%"}
+
+```{python}
+df[["First Name", "Last Name"]].iloc[4:10]
+```
+
+:::
+
+:::
+
+:::
+
+## `DataFrame`: Filtering {.smaller}
+
+* You can filter your `DataFrame` using any number of Boolean conditions using 'pure' Python or the `query()` method.
+
+::: {.panel-tabset style="font-size: 0.8em;"}
+
+### Equality
+
+**Example**: Filter table just to males
+
+```{python}
+df[data["Sex"] == "Male"].head(2)
+```
+
+Or using the `query()` method:
+
+```{python}
+df.query("Sex == 'Male'").head(2)
+```
+
+### Inequalities
+
+**Example**: Filter to those born after 2020:
+
+```{python}
+df[df["Date of birth"] > "2020-01-01"]
+```
+
+**Example**: Using the `query()` method:
+
+```{python}
+df.query("`Date of birth` > '2020-01-01'")
+```
+
+### Multiple conditions
+
+* You can combine any number of logical operators separated by `&` (and) and `|` (or), and using parentheses to control precedence:
+
+```{python}
+
+df[
+    ((df["Date of birth"] > "2021-01-01") & (df["Sex"] == "Male"))
+    | df["Job Title"].str.contains("archaeologist", case=False)
+]
+```
+
+Or using the `query()` method:
+
+```{python}
+df.query(
+    "(`Date of birth` > '2021-01-01' & Sex == 'Male') | `Job Title`.str.contains('archaeologist', case=False)"
+)
+```
+
+:::
+
+## `DataFrame`: Modifications {.smaller}
+
+* You can assign values to elements similarly to a normal Python `list` but with some special magic for 'vectorized' operations.
+
+::: {.panel-tabset}
+
+### Single assignment
+
+**Example**: Shelby got a new job
+
+```{python}
+df.loc[1, "Job Title"] = "Data scientist"
+df.head(3)
+```
+
+### Bulk assignment
+
+**Example**: Everyone got a the same new job!
+
+```{python}
+df["Job Title"] = "Data scientist"
+df.head(3)
+```
+
+### Bulk calculation
+
+**Example**: Everyone is actually 1 year older
+
+```{python}
+df["Date of birth"] -= pd.Timedelta(days=365)
+df.head(3)
+```
+
+### Bulk replacement
+
+**Example**: Change anyone with a `.net` email address to `.com`
+
+```{python}
+df["Email"] = data["Email"].str.replace(".net", ".com")
+df.head(3)
+```
+
+:::
+
+## Key points {style="font-size: 90%;"}
+
+1. Importing a dataset, understanding its structure, and carrying out filtering and checking are only the very first steps of data analysis!
+2. You can import data into Python using `read_csv()` and `read_excel()`
+3. Pandas `DataFrame` objects store tabular data
+    * You can select data using `.iloc()` and `.loc()`
+    * You can filter data with boolean expressions using `.query()`
+    * Dataframes can be combined using `.merge()`

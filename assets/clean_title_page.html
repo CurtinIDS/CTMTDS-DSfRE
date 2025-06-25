@@ -1,0 +1,53 @@
+<!-- Two separate code chunks to 
+(a) remove footer from title slide, and 
+(b) remove logo from title slide.
+-->
+
+<!-- Code in l.36 - l.50 removes logo and is from  
+https://github.com/quarto-dev/quarto-cli/discussions/557.
+It is contained within code to remove footer that is from
+https://stackoverflow.com/questions/75351401/remove-slide-number-and-footer-on-quarto-title-slide
+-->
+
+<style>
+  .hide {
+    display: none !important;
+  }
+</style>
+
+<script>
+  function remove() {
+    let footer = document.querySelector('div.footer');
+    let slideNo = document.querySelector('div.slide-number');
+    slideNo.classList.add('hide');
+    footer.classList.add('hide');
+  
+    Reveal.on('slidechanged', event => {  
+      if(Reveal.isFirstSlide()) {
+        slideNo.classList.add('hide');
+        footer.classList.add('hide');
+      } else {
+        slideNo.classList.remove('hide');
+        footer.classList.remove('hide');
+      }
+    });
+  }
+  
+  Reveal.on('ready', event => {
+      if (event.indexh === 0) {
+        document.querySelector("div.has-logo > img.slide-logo").style.display = "none";
+      }
+    });
+    Reveal.addEventListener('slidechanged', (event) => {
+      if (event.indexh === 0) {
+        Reveal.configure({ slideNumber: null });
+        document.querySelector("div.has-logo > img.slide-logo").style.display = "none";
+      }
+      if (event.indexh === 1) { 
+        Reveal.configure({ slideNumber: 'c' });
+        document.querySelector("div.has-logo > img.slide-logo").style.display = null;
+      }
+    });
+  
+  window.onload = remove();
+</script>

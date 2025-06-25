@@ -1,0 +1,4 @@
+model,brand,name,capacity,operating_power,bytes_per_sector,cache_buffer,speed
+ST4000DM000,Seagate,Desktop HDD,4000,5.5,4096,64,7200
+ST8000NM0055,Seagate,Exos 7E8,8000,10,4096,256,7200
+ST12000NM0007,Seagate,Exos X12,12000,7.8,4096,256,7200

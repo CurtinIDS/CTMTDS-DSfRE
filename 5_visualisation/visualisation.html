@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="visualisation_files/libs/clipboard/clipboard.min.js"></script>
+<script src="visualisation_files/libs/quarto-html/tabby.min.js"></script>
+<script src="visualisation_files/libs/quarto-html/popper.min.js"></script>
+<script src="visualisation_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="visualisation_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="visualisation_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="visualisation_files/libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="visualisation_files/libs/quarto-contrib/reveal-header-1.0.0/add_header.js" defer="true"></script>
+<link href="visualisation_files/libs/quarto-contrib/reveal-header-1.0.0/add_header.css" rel="stylesheet">
+<script src="visualisation_files/libs/quarto-contrib/sc-sb-title-1.0.0/sc_sb_title.js" defer="true"></script>
+<link href="visualisation_files/libs/quarto-contrib/grid-no-htext-1.0.0/grid_no_htext.css" rel="stylesheet"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.29">
+
+  <title>Principles and Practice of Data Visualisation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="visualisation_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="visualisation_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="visualisation_files/libs/revealjs/dist/theme/quarto-5b0ba2fd2caf988eb1f1bfde6f6d555c.css">
+  <link href="visualisation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="visualisation_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="visualisation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="visualisation_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+  
+  <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-background-image="../assets/title_background.png" data-background-opacity="1.0" data-background-size="contain" class="quarto-title-block center">
+  <h1 class="title">Principles and Practice of Data Visualisation</h1>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section id="module-outline" class="slide level2">
+<h2>Module Outline</h2>
+<ul>
+<li class="fragment">Introduction to visualisation</li>
+<li class="fragment">The importance of visualisation</li>
+<li class="fragment">Visualisation and EDA</li>
+<li class="fragment">Elements of visualisation</li>
+<li class="fragment">Guidelines</li>
+<li class="fragment">Putting it all together</li>
+</ul>
+</section>
+<section>
+<section id="introduction" class="title-slide slide level1 center">
+<h1>Introduction</h1>
+
+</section>
+<section id="visualisation-understanding-and-communication" class="slide level2">
+<h2>Visualisation, understanding, and communication</h2>
+<ul>
+<li>Visualisation of data starts with one of two questions:
+<ul>
+<li>What do I want to know about my data?</li>
+<li>What do I want to communicate about my data?</li>
+</ul></li>
+<li>Visualisation is an integral part of the DS workflow
+<ul>
+<li>Exploratory data analysis</li>
+<li>Modelling and analysis</li>
+<li>Communicating results</li>
+</ul></li>
+</ul>
+<!-- Begin old content -->
+</section>
+<section id="visualisation-and-data-types" class="slide level2">
+<h2>Visualisation and data types</h2>
+<ul>
+<li>What types of variables/data do you have?</li>
+<li>Numeric or categorical?</li>
+<li>Discrete or continuous?</li>
+<li>Time series, spatial, both?</li>
+<li>Other types?</li>
+</ul>
+</section>
+<section id="visualisation-is-not-new" class="slide level2">
+<h2>Visualisation is not new!</h2>
+<div class="panel-tabset">
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">Broad St Pump</a></li><li><a href="#tabset-1-2">La grande armée</a></li><li><a href="#tabset-1-3">Contemporary</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/snow_map.jpg" width="400"></p>
+<figcaption>John Snow’s visualisation of cholera outbreaks (1854).</figcaption>
+</figure>
+</div>
+</div>
+<div id="tabset-1-2">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/Minard.jpg" height="380"></p>
+<figcaption>Charles Minard and the destruction of Napoléon’s army (1869).</figcaption>
+</figure>
+</div>
+</div>
+<div id="tabset-1-3">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/Measles.png" height="390"></p>
+<figcaption>Van Panhuis, W.G. et al.&nbsp;(2013) <em>NEJM</em></figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="the-importance-of-visualisation" class="title-slide slide level1 center">
+<h1>The importance of visualisation</h1>
+
+</section>
+<section id="the-challenger-disaster" class="slide level2">
+<h2>The <em>Challenger</em> disaster</h2>
+
+<img data-src="images/challenger.jpg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="challenger-the-background" class="slide level2">
+<h2><em>Challenger</em>: The background</h2>
+<div style="font-size: 95%">
+<ul>
+<li>Engineers at Morton Thiokol, who supplied solid rocket motors to NASA, recommended that the launch be delayed because cold weather would jeopardize the stability of O-rings</li>
+<li>Their recommendations were overruled due to lack of persuasive evidence, and 73 seconds after launch, Challenger exploded</li>
+<li>According to Tufte (1997), the evidence was in the form of hand-written tables, but none was graphical, and they failed to convince NASA to delay the launch</li>
+</ul>
+</div>
+</section>
+<section id="challenger-tables-not-plots" class="slide level2">
+<h2><em>Challenger</em>: Tables, not plots</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="images/challenger_chart.png"></p>
+</div><div class="column" style="width:50%;">
+<p><img data-src="images/challenger2.png"></p>
+</div></div>
+</section>
+<section id="challenger-critiques-by-tufte-1997" class="slide level2">
+<h2><em>Challenger</em>: Critiques by Tufte (1997)</h2>
+<div style="font-size: 95%">
+<ul>
+<li>The tables (charts) that were discussed at meetings made it difficult to see bivariate (temperature/failure) relationships</li>
+<li>Anecdotal evidence
+<ul>
+<li>With small sample size, anecdotal evidence can be particularly challenging to refute</li>
+<li>Engineers argued that SRM-15 had the most damage on the coldest previous launch date, NASA officials countered that SRM-22 had almost as much damage on one of the warmer launch dates</li>
+</ul></li>
+<li>Plotting the data tells a different story!</li>
+</ul>
+</div>
+</section>
+<section id="challenger-plotting-o-ring-damage" class="slide level2">
+<h2><em>Challenger</em>: Plotting O-ring damage</h2>
+
+<img data-src="images/challenger_plot.png" class="r-stretch"></section>
+<section id="challenger-1986" class="slide level2">
+<h2><em>Challenger</em> (1986)</h2>
+
+<img data-src="images/challenger_explosion2.jpg" class="quarto-figure quarto-figure-center r-stretch"></section></section>
+<section>
+<section id="visualisation-and-eda" class="title-slide slide level1 center">
+<h1>Visualisation and EDA</h1>
+
+</section>
+<section id="exploratory-data-analysis-eda" class="slide level2">
+<h2>Exploratory data analysis (EDA)</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div style="font-size: 85%">
+<ul>
+<li>“Exploratory data analysis is an attitude, a state of flexibility, a willingness to look for those things that we believe are not there, as well as those we believe are there.”</li>
+<li>“The greatest value of a picture is when it forces us to notice what we never expected to see.”</li>
+</ul>
+<div style="text-align: left;">
+<p>John Tukey (1915-2015)</p>
+</div>
+</div>
+</div><div class="column" style="width:40%;">
+<p><img data-src="images/Tukey.png"></p>
+</div></div>
+</section>
+<section id="eda" class="slide level2">
+<h2>EDA</h2>
+<div style="font-size: 75%">
+<ul>
+<li>Consists of a large set of ill-defined visual tools to explore data as a prelude to postulating models or methods of analysis</li>
+<li>Could argue that data-wrangling overlaps with EDA</li>
+<li>Basic tools are plots, graphs, and summary statistics</li>
+<li>No step-by-step method, but does involve systematically going through the data to understand it
+<ul>
+<li>Distributions of variables</li>
+<li>Relationships in time</li>
+<li>Relationships among variables</li>
+</ul></li>
+<li>Missing values/incorrect or nonsensical data</li>
+<li>Exploratory analysis is by its nature <em>iterative</em></li>
+</ul>
+</div>
+</section>
+<section id="eda-1" class="slide level2">
+<h2>EDA</h2>
+<div style="font-size: 85%">
+<ul>
+<li>As much of a mindset as a set of tools</li>
+<li>Try to understand the data – gain intuition, understand the process that generated it</li>
+<li>‘Sanity-checking’</li>
+<li>Making sure that the data is on the scale you expect</li>
+<li>Look for patterns
+<ul>
+<li>May be meaningful, but could also indicate something wrong in the data!</li>
+</ul></li>
+<li>Above all, EDA is between you and the data – for you to understand what’s going on</li>
+</ul>
+</div>
+</section></section>
+<section>
+<section id="elements-of-visualisation" class="title-slide slide level1 center">
+<h1>Elements of visualisation</h1>
+
+</section>
+<section id="a-taxonomy-of-elements" class="slide level2">
+<h2>A taxonomy of elements</h2>
+<ul>
+<li><p>Scale</p></li>
+<li><p>Conditioning</p></li>
+<li><p>Perception—colour and length</p></li>
+<li><p>Transformations</p></li>
+<li><p>Context</p></li>
+<li><p>Smoothing and other large data considerations</p></li>
+</ul>
+</section>
+<section id="scale" class="slide level2">
+<h2>Scale</h2>
+<div style="font-size: 90%">
+<ul>
+<li><p>In any plots, choose axis limits to fill the plotting region</p></li>
+<li><p>If necessary, make multiple plots of different regions to focus on important features that may not be visible in a single plot</p></li>
+<li><p>Is the plot constructed in a way that matches viewers’ expectations?</p>
+<ul>
+<li>Do the axes increase in an expected way?</li>
+</ul></li>
+<li><p>Don’t confuse the viewer!</p>
+<ul>
+<li>Scales changes mid-axis</li>
+<li>Two different scales on the same axis</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="whats-misleading-about-this" class="slide level2">
+<h2>What’s misleading about this?</h2>
+
+<img data-src="images/FloridaGunDeaths.jpg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="conditioning" class="slide level2">
+<h2>Conditioning</h2>
+<div style="font-size: 95%">
+<ul>
+<li>In any large and complex dataset, there will likely be different relationships among variables in different subgroups of the data
+<ul>
+<li>Construct side-by-side scatterplots, histograms, boxplots, etc. but keep scales the same to make comparisons easier</li>
+<li>If representing on the same plot, use different colours and symbols to represent different groups</li>
+<li>Use scatterplot smoothers to guide the viewer’s eye</li>
+</ul></li>
+<li>In the measles example, some grouping according to region was carried out</li>
+</ul>
+</div>
+</section>
+<section id="example-of-conditioning" class="slide level2">
+<h2>Example of conditioning</h2>
+<div class="panel-tabset">
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">w/o Conditioning</a></li><li><a href="#tabset-2-2">w/ Conditioning</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/Gapminder1.png" class="quarto-figure quarto-figure-center" height="450"></p>
+</figure>
+</div>
+</div>
+<div id="tabset-2-2">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/Gapminder2.png" class="quarto-figure quarto-figure-center" height="450"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="perception-colour" class="slide level2">
+<h2>Perception: colour</h2>
+<div style="font-size: 90%">
+<ul>
+<li>Colour lets you see an extra dimension</li>
+<li>Colour plots are much more common, but being able to choose a palette of colours is not a straightforward task</li>
+<li>Saturated (bright) colours tend to be difficult to look at for long periods of time</li>
+<li>Keep in mind that some people are colour-blind</li>
+<li>Use existing colour palettes rather than creating your own</li>
+<li>Decide whether to use a sequential colour scheme or one where low and high values should be highlighted?</li>
+</ul>
+</div>
+</section>
+<section id="colour-palettes-in-seaborn" class="slide level2">
+<h2>Colour palettes in <code>seaborn</code></h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/seaborn_palettes.png" class="quarto-figure quarto-figure-center" height="450"></p>
+</figure>
+</div>
+<div style="font-size: 50%">
+<p><a href="https://bilarasa.com/seaborn-color-palette-complete-guide-on-seaborn-color-palette/">https://bilarasa.com/seaborn-color-palette-complete-guide-on-seaborn-color-palette/</a></p>
+</div>
+</section>
+<section id="palette-for-high-and-low-values" class="slide level2">
+<h2>Palette for high and low values</h2>
+
+<img data-src="images/Extremes.png" class="r-stretch quarto-figure-center"><p class="caption">Lehmann, E. A., Phatak, A. Stephenson, A. and Lau, R. (2016). <em>Environmetrics</em>, <strong>27</strong>, 239–251.</p></section>
+<section id="perception-length" class="slide level2">
+<h2>Perception: Length</h2>
+<div style="font-size: 90%">
+<ul>
+<li>We are pretty good at judging length visually, by comparison to area, volumes, or angles</li>
+<li>Practical consequence
+<ul>
+<li>Bar charts are to be preferred to pie charts</li>
+</ul></li>
+<li>Practical considerations
+<ul>
+<li>Visually, the longer a bar, the greater the absolute value it represents</li>
+<li>Can be vertical or horizontal</li>
+<li>To judge magnitude, bars must represent the entire length, not just a portion</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="length-spot-the-difference" class="slide level2">
+<h2>Length: Spot the difference</h2>
+
+<img data-src="images/Barchart.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="length-or-area" class="slide level2">
+<h2>Length or area?</h2>
+<center>
+</center>
+
+<img data-src="images/Africa.png" class="quarto-figure quarto-figure-center r-stretch" width="900"></section>
+<section id="transformations" class="slide level2">
+<h2>Transformations</h2>
+<ul>
+<li>Sometimes, curvilinear bivariate relationships can be straightened out by transforming one or more variables
+<ul>
+<li>Easier to interpret than nonlinear relationship</li>
+<li>Prior to regression</li>
+</ul></li>
+<li>Transformations can be useful when
+<ul>
+<li>The data covers several orders of magnitude</li>
+<li>Data is ‘squashed in’</li>
+</ul></li>
+</ul>
+</section>
+<section id="tukey-mostellers-bulging-rule" class="slide level2">
+<h2>Tukey-Mosteller’s bulging rule</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="images/BulgingRule.png"></p>
+</div><div class="column" style="width:50%;">
+<div style="font-size: 80%">
+<ul>
+<li>Tukey and Mosteller, a couple of statisticians, came up with some guidelines for how to choose transformations to help ‘straighten-out’ a plot of two variables</li>
+<li>For example, if you have data in the first quadrant, try transformations along the positive <span class="math inline">\(Y\)</span>-axis or <span class="math inline">\(X\)</span>-axis or both</li>
+</ul>
+</div>
+</div></div>
+</section>
+<section id="example-bulging-rule" class="slide level2">
+<h2>Example: Bulging rule</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="images/Bulging1.png" height="500"></p>
+</div><div class="column" style="width:50%;">
+<p><img data-src="images/Bulging2.png" height="500"></p>
+</div></div>
+</section>
+<section id="example-logarithmic-transformation" class="slide level2">
+<h2>Example: Logarithmic transformation</h2>
+<div class="panel-tabset">
+<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">Moore’s Law</a></li><li><a href="#tabset-3-2">Linear plot</a></li><li><a href="#tabset-3-3">Logarithmic plot</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1">
+<ul>
+<li>‘Moore’s Law’ is the observation that the number of transistors in an integrated circuit doubles about every two years</li>
+<li>Not so much a law as an empirical observation</li>
+<li>Let’s visualise it in two ways</li>
+</ul>
+</div>
+<div id="tabset-3-2">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/moore_1.png" class="quarto-figure quarto-figure-center" height="400"></p>
+</figure>
+</div>
+</div>
+<div id="tabset-3-3">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/moore_2.png" class="quarto-figure quarto-figure-center" height="400"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="context" class="slide level2">
+<h2>Context</h2>
+<ul>
+<li>Context is information that leads to a better understanding of the who, what, where, and why of your graphic, e.g.,
+<ul>
+<li>Axes labels</li>
+<li>Units of measurements</li>
+<li>Label points of unusual interest,</li>
+<li>Depending on broader context in which the graphic is appearing, a caption describing the data and important features may be necessary</li>
+</ul></li>
+</ul>
+</section>
+<section id="large-datasets" class="slide level2">
+<h2>Large datasets</h2>
+<ul>
+<li>Split the data into natural subgroups (conditioning) before plotting</li>
+<li>Use transparent colours</li>
+<li>Consider adding a scatterplot smoother to help guide the viewer’s eye</li>
+</ul>
+</section>
+<section id="cherry-blossom-run-washington-dc" class="slide level2">
+<h2>Cherry Blossom Run (Washington, DC)</h2>
+<div class="panel-tabset">
+<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-4-1">All data</a></li><li><a href="#tabset-4-2">Conditioning and transparency</a></li><li><a href="#tabset-4-3">Smoothing</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/CherryBlossom_All.png" class="quarto-figure quarto-figure-center" height="450"></p>
+</figure>
+</div>
+</div>
+<div id="tabset-4-2">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/CherryBlossom_condition.png" class="quarto-figure quarto-figure-center" height="450"></p>
+</figure>
+</div>
+</div>
+<div id="tabset-4-3">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/CherryBlossom_smoother.png" class="quarto-figure quarto-figure-center" height="450"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="guidelines" class="slide level2">
+<h2>Guidelines</h2>
+<p>Nolan (2017)</p>
+<ul>
+<li>Chose scales appropriately</li>
+<li>Avoid having other graph elements interfere with the data</li>
+<li>Use visually prominent symbols</li>
+<li>Eliminate superfluous material—‘chart junk’ as in the <em>Challenger</em> graphics</li>
+<li>Where possible, avoid plotting points on top of one another—use jittering</li>
+</ul>
+</section>
+<section id="guildelines-continued" class="slide level2">
+<h2>Guildelines (continued)</h2>
+<ul>
+<li>Put juxtaposed plots on the same scale</li>
+<li>Make it easy to distinguish elements of superposed plots, e.g., colour, line type</li>
+<li>Avoid stacking</li>
+<li>Avoid areas, volumes</li>
+<li>Don’t break visual metaphor, i.e., if using rectangles, then area should correspond to the value of the variable you’re trying to represent, not the length of one of the sides</li>
+</ul>
+</section>
+<section id="guidelines-continued" class="slide level2">
+<h2>Guidelines (continued)</h2>
+<ul>
+<li>Describe what you want the reader to see in the caption</li>
+<li>Use informative labels and legends</li>
+<li>Use colour and plotting symbols to add more context</li>
+<li>Plot the same thing in many ways/scales, but not on the same plot!</li>
+</ul>
+</section></section>
+<section>
+<section id="putting-it-all-together" class="title-slide slide level1 center">
+<h1>Putting it all together</h1>
+
+</section>
+<section id="visualising-belt-wear" class="slide level2">
+<h2>Visualising Belt Wear</h2>
+<center>
+<div id="cb92afce" class="cell" data-execution_count="5">
+<div class="cell-output cell-output-display">
+<div>
+<figure>
+<p><img data-src="visualisation_files/figure-revealjs/cell-6-output-1.png" width="808" height="449"></p>
+</figure>
+</div>
+</div>
+</div>
+</center>
+</section>
+<section id="improving-the-visualisation" class="slide level2">
+<h2>Improving the visualisation</h2>
+<center>
+<div id="8486f7c7" class="cell" data-execution_count="6">
+<div class="cell-output cell-output-display">
+<div>
+<figure>
+<p><img data-src="visualisation_files/figure-revealjs/cell-7-output-1.png" width="808" height="449"></p>
+</figure>
+</div>
+</div>
+</div>
+</center>
+</section>
+<section id="getting-fancy-animation" class="slide level2">
+<h2>Getting fancy: animation</h2>
+<!-- Fake cell to make code cleaner -->
+<center>
+<!-- Real cell with delayed animation time -->
+<div id="cd898af2" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-display">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script type="text/javascript">if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>                <div id="4d325d35-78e1-4e8b-bfb8-f46a9bde2e10" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("4d325d35-78e1-4e8b-bfb8-f46a9bde2e10")) {                    Plotly.newPlot(                        "4d325d35-78e1-4e8b-bfb8-f46a9bde2e10",                        [{"fillpattern":{"shape":""},"hovertemplate":"Relative Test Date=0\u003cbr\u003eLength along belt (mm)=%{x}\u003cbr\u003eThickness (mm)=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"","line":{"color":"#636efa"},"marker":{"symbol":"circle"},"mode":"lines","name":"","orientation":"v","showlegend":false,"stackgroup":"1","x":{"dtype":"i2","bdata":"TAB5ALAA4wATAUQBcgGgAc0B+wEyAmgCmgLVAgQDMgNfA5kDzgP\u002fAzMEZASbBNcE\u002fQQhBUwFgQW+BfoFLQZdBocGuAbyBg=="},"xaxis":"x","y":{"dtype":"f8","bdata":"MzMzMzMzMECamZmZmRkwQJqZmZmZGTBAzczMzMzML0AAAAAAAAAwQM3MzMzMTDBAmpmZmZkZMEAzMzMzMzMwQDMzMzMzMzBAMzMzMzMzMEDNzMzMzEwwQDMzMzMzMzBAmpmZmZkZMEDNzMzMzEwwQAAAAAAAADBAAAAAAAAAMEAAAAAAAAAwQJqZmZmZmS9AmpmZmZkZMEAzMzMzMzMwQM3MzMzMTDBAmpmZmZkZMEAzMzMzMzMwQAAAAAAAADBAmpmZmZkZMEAAAAAAAAAwQJqZmZmZGTBAmpmZmZkZMEDNzMzMzEwwQJqZmZmZGTBAmpmZmZkZMEDNzMzMzEwwQAAAAAAAgDBAmpmZmZmZMEAAAAAAAIAwQA=="},"yaxis":"y","type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"Length along belt (mm)"}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"Thickness (mm)"}},"legend":{"tracegroupgap":0},"updatemenus":[{"buttons":[{"args":[null,{"frame":{"duration":1500,"redraw":false},"mode":"immediate","fromcurrent":true,"transition":{"duration":500,"easing":"linear"}}],"label":"&#9654;","method":"animate"},{"args":[[null],{"frame":{"duration":0,"redraw":false},"mode":"immediate","fromcurrent":true,"transition":{"duration":0,"easing":"linear"}}],"label":"&#9724;","method":"animate"}],"direction":"left","pad":{"r":10,"t":70},"showactive":false,"type":"buttons","x":0.1,"xanchor":"right","y":0,"yanchor":"top"}],"sliders":[{"active":0,"currentvalue":{"prefix":"Relative Test Date="},"len":0.9,"pad":{"b":10,"t":60},"steps":[{"args":[["0"],{"frame":{"duration":0,"redraw":false},"mode":"immediate","fromcurrent":true,"transition":{"duration":0,"easing":"linear"}}],"label":"0","method":"animate"},{"args":[["18"],{"frame":{"duration":0,"redraw":false},"mode":"immediate","fromcurrent":true,"transition":{"duration":0,"easing":"linear"}}],"label":"18","method":"animate"},{"args":[["53"],{"frame":{"duration":0,"redraw":false},"mode":"immediate","fromcurrent":true,"transition":{"duration":0,"easing":"linear"}}],"label":"53","method":"animate"},{"args":[["111"],{"frame":{"duration":0,"redraw":false},"mode":"immediate","fromcurrent":true,"transition":{"duration":0,"easing":"linear"}}],"label":"111","method":"animate"},{"args":[["168"],{"frame":{"duration":0,"redraw":false},"mode":"immediate","fromcurrent":true,"transition":{"duration":0,"easing":"linear"}}],"label":"168","method":"animate"},{"args":[["223"],{"frame":{"duration":0,"redraw":false},"mode":"immediate","fromcurrent":true,"transition":{"duration":0,"easing":"linear"}}],"label":"223","method":"animate"}],"x":0.1,"xanchor":"left","y":0,"yanchor":"top"}]},                        {"responsive": true}                    ).then(function(){
+                            Plotly.addFrames('4d325d35-78e1-4e8b-bfb8-f46a9bde2e10', [{"data":[{"fillpattern":{"shape":""},"hovertemplate":"Relative Test Date=0\u003cbr\u003eLength along belt (mm)=%{x}\u003cbr\u003eThickness (mm)=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"","line":{"color":"#636efa"},"marker":{"symbol":"circle"},"mode":"lines","name":"","orientation":"v","showlegend":false,"stackgroup":"1","x":{"dtype":"i2","bdata":"TAB5ALAA4wATAUQBcgGgAc0B+wEyAmgCmgLVAgQDMgNfA5kDzgP\u002fAzMEZASbBNcE\u002fQQhBUwFgQW+BfoFLQZdBocGuAbyBg=="},"xaxis":"x","y":{"dtype":"f8","bdata":"MzMzMzMzMECamZmZmRkwQJqZmZmZGTBAzczMzMzML0AAAAAAAAAwQM3MzMzMTDBAmpmZmZkZMEAzMzMzMzMwQDMzMzMzMzBAMzMzMzMzMEDNzMzMzEwwQDMzMzMzMzBAmpmZmZkZMEDNzMzMzEwwQAAAAAAAADBAAAAAAAAAMEAAAAAAAAAwQJqZmZmZmS9AmpmZmZkZMEAzMzMzMzMwQM3MzMzMTDBAmpmZmZkZMEAzMzMzMzMwQAAAAAAAADBAmpmZmZkZMEAAAAAAAAAwQJqZmZmZGTBAmpmZmZkZMEDNzMzMzEwwQJqZmZmZGTBAmpmZmZkZMEDNzMzMzEwwQAAAAAAAgDBAmpmZmZmZMEAAAAAAAIAwQA=="},"yaxis":"y","type":"scatter"}],"name":"0"},{"data":[{"fillpattern":{"shape":""},"hovertemplate":"Relative Test Date=18\u003cbr\u003eLength along belt (mm)=%{x}\u003cbr\u003eThickness (mm)=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"","line":{"color":"#636efa"},"marker":{"symbol":"circle"},"mode":"lines","name":"","orientation":"v","showlegend":false,"stackgroup":"1","x":{"dtype":"i2","bdata":"SwCBAKsA3AASAUgBdwGjAcsB\u002fQEtAlgCfAKlAtMCBAM6A2cDogPSA\u002fwDJgRdBJMEwwT3BCcFXgWSBcUF8QUsBl0GjQbuBg=="},"xaxis":"x","y":{"dtype":"f8","bdata":"MzMzMzMzMECamZmZmRkwQGZmZmZmZi9AZmZmZmZmLkDNzMzMzMwtQDMzMzMzMy1AAAAAAAAALkAzMzMzMzMuQGZmZmZmZi5AZmZmZmZmLkAAAAAAAAAuQGZmZmZmZi1AMzMzMzMzLUDNzMzMzMwsQJqZmZmZmSxAMzMzMzMzLEBmZmZmZmYsQGZmZmZmZixAMzMzMzMzLECamZmZmZksQM3MzMzMzCxAzczMzMzMLEAAAAAAAAAtQM3MzMzMzCxAAAAAAAAALUDNzMzMzMwsQAAAAAAAAC1AzczMzMzMLECamZmZmZksQJqZmZmZmS1AZmZmZmZmLUCamZmZmZksQGZmZmZmZi1AMzMzMzMzL0AAAAAAAAAwQA=="},"yaxis":"y","type":"scatter"}],"name":"18"},{"data":[{"fillpattern":{"shape":""},"hovertemplate":"Relative Test Date=53\u003cbr\u003eLength along belt (mm)=%{x}\u003cbr\u003eThickness (mm)=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"","line":{"color":"#636efa"},"marker":{"symbol":"circle"},"mode":"lines","name":"","orientation":"v","showlegend":false,"stackgroup":"1","x":{"dtype":"i2","bdata":"TACBALIA4AAVAUcBdAGmAeMBEwJHAnQCnQLXAgsDOgNrA6ADzQMGBDYEZgSXBM0EAQUsBWEFlgXHBfMFJgZYBowGwQbzBg=="},"xaxis":"x","y":{"dtype":"f8","bdata":"MzMzMzMzL0DNzMzMzMwuQAAAAAAAAC9AmpmZmZmZLUBmZmZmZmYsQGZmZmZmZixAmpmZmZmZLEAzMzMzMzMtQAAAAAAAAC1AmpmZmZmZLEAAAAAAAAAsQM3MzMzMzCpAZmZmZmZmK0BmZmZmZmYrQDMzMzMzMytAmpmZmZmZK0DNzMzMzMwqQGZmZmZmZipAzczMzMzMKkDNzMzMzMwqQJqZmZmZmStAZmZmZmZmLEAAAAAAAAAsQJqZmZmZmStAmpmZmZmZK0DNzMzMzMwrQM3MzMzMzCtAZmZmZmZmK0BmZmZmZmYrQJqZmZmZmStAMzMzMzMzLEAAAAAAAAAsQM3MzMzMzCtAzczMzMzMKUBmZmZmZmYuQA=="},"yaxis":"y","type":"scatter"}],"name":"53"},{"data":[{"fillpattern":{"shape":""},"hovertemplate":"Relative Test Date=111\u003cbr\u003eLength along belt (mm)=%{x}\u003cbr\u003eThickness (mm)=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"","line":{"color":"#636efa"},"marker":{"symbol":"circle"},"mode":"lines","name":"","orientation":"v","showlegend":false,"stackgroup":"1","x":{"dtype":"i2","bdata":"SgCAAK4A3wAVAU0BeQGpAdwBCwI9AmsCowLYAgsDPANxA6kD0QMCBDMEZwSYBMsEBwU2BWMFkAXJBfgFKwZbBo0GvgbxBg=="},"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAAAAMECamZmZmZkvQGZmZmZmZi5AAAAAAAAALEAAAAAAAAArQDMzMzMzMytAzczMzMzMK0AzMzMzMzMsQAAAAAAAACxAMzMzMzMzK0AAAAAAAAAqQM3MzMzMzChAzczMzMzMJ0BmZmZmZmYnQM3MzMzMzCdAMzMzMzMzJ0CamZmZmZknQGZmZmZmZidAZmZmZmZmJ0AzMzMzMzMoQM3MzMzMzCdAMzMzMzMzKUCamZmZmZkoQAAAAAAAACpAAAAAAAAAKkDNzMzMzMwpQAAAAAAAACpAMzMzMzMzKkAAAAAAAAAqQDMzMzMzMyhAzczMzMzMJ0AzMzMzMzMoQJqZmZmZmS5AmpmZmZkZMEAzMzMzMzMwQA=="},"yaxis":"y","type":"scatter"}],"name":"111"},{"data":[{"fillpattern":{"shape":""},"hovertemplate":"Relative Test Date=168\u003cbr\u003eLength along belt (mm)=%{x}\u003cbr\u003eThickness (mm)=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"","line":{"color":"#636efa"},"marker":{"symbol":"circle"},"mode":"lines","name":"","orientation":"v","showlegend":false,"stackgroup":"1","x":{"dtype":"i2","bdata":"UAB\u002fAK4A4gASAUQBfAGtAeABDwI9AmwCpgLYAgUDPQNrA58DzwMDBDAEYwSfBMwEAgUoBVwFkQXEBeUFJwZeBpAGyAbvBg=="},"xaxis":"x","y":{"dtype":"f8","bdata":"zczMzMzMLUAzMzMzMzMrQDMzMzMzMylAAAAAAAAAKEAzMzMzMzMmQAAAAAAAACJAzczMzMzMJUAzMzMzMzMnQAAAAAAAACVAZmZmZmZmJUAAAAAAAAAjQM3MzMzMzCFAMzMzMzMzIEAzMzMzMzMgQAAAAAAAACBAmpmZmZmZH0AzMzMzMzMfQDMzMzMzMx9AAAAAAAAAIECamZmZmZkdQM3MzMzMzB5AmpmZmZmZH0AAAAAAAAAhQM3MzMzMzCFAAAAAAAAAIkBmZmZmZmYjQAAAAAAAACRAmpmZmZmZJECamZmZmZkjQM3MzMzMzCJAzczMzMzMIECamZmZmZkhQAAAAAAAACxAmpmZmZmZLEAzMzMzMzMtQA=="},"yaxis":"y","type":"scatter"}],"name":"168"},{"data":[{"fillpattern":{"shape":""},"hovertemplate":"Relative Test Date=223\u003cbr\u003eLength along belt (mm)=%{x}\u003cbr\u003eThickness (mm)=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"","line":{"color":"#636efa"},"marker":{"symbol":"circle"},"mode":"lines","name":"","orientation":"v","showlegend":false,"stackgroup":"1","x":{"dtype":"i2","bdata":"SwB8AKsA4gAYAUUBfgGoAdYBEAJCAngCowLVAgcDOgNlA58D0gMABDoEbgSfBMsEAAUvBWMFjgXJBfUFJgZdBo4GvQbwBg=="},"xaxis":"x","y":{"dtype":"f8","bdata":"ZmZmZmZmLkBmZmZmZmYuQM3MzMzMzCxAZmZmZmZmKUBmZmZmZmYkQJqZmZmZmSVAmpmZmZmZJUCamZmZmZkkQDMzMzMzMyNAZmZmZmZmIUAAAAAAAAAeQAAAAAAAABxAzczMzMzMHkAzMzMzMzMdQM3MzMzMzBpAAAAAAAAAGkAAAAAAAAAYQM3MzMzMzBhAmpmZmZmZG0DNzMzMzMwcQAAAAAAAAB5AMzMzMzMzH0AAAAAAAAAhQDMzMzMzMyJAzczMzMzMIUCamZmZmZkhQM3MzMzMzCFAAAAAAAAAIUCamZmZmZkgQJqZmZmZmR9AmpmZmZmZHUCamZmZmZkgQGZmZmZmZiRAAAAAAAAALkAAAAAAAAAvQA=="},"yaxis":"y","type":"scatter"}],"name":"223"}]);
+                        }).then(function(){
+                            
+var gd = document.getElementById('4d325d35-78e1-4e8b-bfb8-f46a9bde2e10');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };            </script>        </div>
+</div>
+</div>
+</center>
+</section>
+<section id="further-viewing" class="slide level2">
+<h2>Further viewing</h2>
+
+<img data-src="images/FlowingData_25.png" class="r-stretch"><div style="font-size: 50%">
+<p>Source: <a href="https://flowingdata.com/2017/01/24/one-dataset-visualized-25-ways/">FlowingData</a></p>
+</div>
+</section>
+<section id="further-reading-some-caveats" class="slide level2">
+<h2>Further reading: some caveats</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/caveats.png" class="quarto-figure quarto-figure-center" height="450"></p>
+</figure>
+</div>
+<div style="font-size: 50%">
+<p>Source: <a href="https://www.data-to-viz.com/caveats.html">FlowingData</a></p>
+</div>
+<!--  -->
+
+<div class="reveal-header">
+<div class="header-logo">
+<img data-src="">
+</div>
+<div class="sc-title">
+<p> </p>
+</div>
+<div class="header-text">
+<p> </p>
+</div>
+<div class="sb-title">
+<p> </p>
+</div>
+</div>
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<p><img src="../assets/logo.png" class="slide-logo"></p>
+<div class="footer footer-default">
+<p>Data Science Transforming Maintenance</p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="visualisation_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="visualisation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="visualisation_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="visualisation_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="visualisation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="visualisation_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="visualisation_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="visualisation_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="visualisation_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="visualisation_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <!-- Two separate code chunks to 
+    (a) remove footer from title slide, and 
+    (b) remove logo from title slide.
+    -->
+
+    <!-- Code in l.36 - l.50 removes logo and is from  
+    https://github.com/quarto-dev/quarto-cli/discussions/557.
+    It is contained within code to remove footer that is from
+    https://stackoverflow.com/questions/75351401/remove-slide-number-and-footer-on-quarto-title-slide
+    -->
+
+    <style>
+      .hide {
+        display: none !important;
+      }
+    </style>
+
+    <script>
+      function remove() {
+        let footer = document.querySelector('div.footer');
+        let slideNo = document.querySelector('div.slide-number');
+        slideNo.classList.add('hide');
+        footer.classList.add('hide');
+      
+        Reveal.on('slidechanged', event => {  
+          if(Reveal.isFirstSlide()) {
+            slideNo.classList.add('hide');
+            footer.classList.add('hide');
+          } else {
+            slideNo.classList.remove('hide');
+            footer.classList.remove('hide');
+          }
+        });
+      }
+      
+      Reveal.on('ready', event => {
+          if (event.indexh === 0) {
+            document.querySelector("div.has-logo > img.slide-logo").style.display = "none";
+          }
+        });
+        Reveal.addEventListener('slidechanged', (event) => {
+          if (event.indexh === 0) {
+            Reveal.configure({ slideNumber: null });
+            document.querySelector("div.has-logo > img.slide-logo").style.display = "none";
+          }
+          if (event.indexh === 1) { 
+            Reveal.configure({ slideNumber: 'c' });
+            document.querySelector("div.has-logo > img.slide-logo").style.display = null;
+          }
+        });
+      
+      window.onload = remove();
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
