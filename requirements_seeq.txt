@@ -1,4 +1,4 @@
-jupyte
+jupyter
 matplotlib
 numpy
 openpyxl
