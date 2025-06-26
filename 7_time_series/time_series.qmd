@@ -1,0 +1,653 @@
+---
+title: "Introduction to Time Series Analysis"
+format:
+  revealjs:
+    theme: [default, ../assets/custom.scss]
+    footer: "Data Science Transforming Maintenance"
+    logo: ../assets/logo.png
+    menu: true
+    slide-number: true
+    show-side-number: all
+    number-sections: true
+    number-depth: 1
+    include-after-body: ../assets/clean_title_page.html
+    echo: false
+    # argument for reveal-header
+    sc-sb-title: true
+title-slide-attributes:
+  data-background-image: ../assets/title_background.png
+  data-background-size: contain
+  data-background-opacity: "1.0"
+# reveal-header extension
+filters: 
+  - reveal-header
+# argument for reveal-header  
+slide-level: 2    
+jupyter: python3
+---
+
+```{python}
+#| echo: False
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+```
+
+## Outline
+
+
+1. Time series data
+2. Statistical models for time series
+3. Characterising and identifying time series
+4. Example
+
+
+# Time series data
+
+## What is a time series? 
+
+::: {style="font-size: 80%"}
+- Time series data can be thought of as data measured at regular intervals of time
+
+- Arise in many areas: science, engineering, finance, banking, environment, health
+
+- Because we are sampling at adjacent points in time, \emph{serial} correlation is introduced
+    
+- Example: data collected on daily maximum temperatures can be considered as a sequence 
+
+- Time series data consist of a list of numbers $\{x_t\}$ and information about the times those numbers were recorded
+:::
+
+::: {style="font-size: 85%"}
+## Visual display of time series
+
+- The first step in analysis of time series data is to plot the data!
+
+- What to look for:
+
+    - linear and nonlinear trends: long-term increase or decrease in the data
+    - seasonality: when a series is influenced by seasonal factors, e.g., month, day of the week
+    - cycles/quasi-periodicities: data exhibits rises and falls that are \emph{not} of fixed period
+    - changes in variability
+    - irregular fluctuations
+:::    
+
+## Passenger counts for MEL-SYD 
+
+```{python}
+df = pd.read_csv("data/ansett.csv")
+
+# Convert 'ds' column to datetime
+df['ds'] = pd.to_datetime(df['ds'])
+
+# Filter for Melbourne-Sydney route and Economy class
+mel_syd_economy = df[(df['Airports'] == 'MEL-SYD') & (df['Class'] == 'Economy')]
+
+# Plot using seaborn
+# Create the plot using constrained_layout instead of tight_layout
+fig, ax = plt.subplots(figsize=(14, 5.5), constrained_layout=True)
+sns.lineplot(data=mel_syd_economy, x='ds', y='y', ax=ax)
+# ax.set_title('Passenger Counts for Melbourne-Sydney (Economy Class)')
+ax.set_xlabel('Date')
+ax.set_ylabel('Passenger Count')
+ax.grid(True)
+plt.show()
+```
+
+## Australia beer production
+
+```{python}
+# Load the dataset
+beer_df = pd.read_csv("data/aus_production.csv")
+
+# Convert 'ds' to datetime format
+beer_df['ds'] = pd.to_datetime(beer_df['ds'])
+
+# Plot the Beer production time series
+plt.figure(figsize=(14, 5.5))
+sns.lineplot(data=beer_df, x='ds', y='Beer')
+# plt.title('Beer Production in Australia (1956–Present)')
+plt.xlabel('Date')
+plt.ylabel('Beer Production')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+```
+
+## Australian beer production by quarter
+
+```{python}
+# Create necessary time-related columns
+beer_df['Year'] = beer_df['ds'].dt.year
+beer_df['Quarter'] = beer_df['ds'].dt.quarter
+beer_df['Quarter_Label'] = beer_df['Quarter'].map({1: 'Q1', 2: 'Q2', 3: 'Q3', 4: 'Q4'})
+
+# Plot beer production over time by quarter
+plt.figure(figsize=(16, 5.5))
+sns.lineplot(data=beer_df, x='Year', y='Beer', hue='Quarter_Label', marker='o')
+plt.xlabel('Year')
+plt.ylabel('Beer Production')
+plt.grid(True)
+plt.legend(title='Quarter')
+plt.tight_layout()
+plt.show()
+```
+
+## Southern Oscillation Index
+
+```{python}
+# Load and parse the SOI text file
+with open("data/soi.txt", "r") as file:  # Use the full path if needed
+    lines = file.readlines()
+
+# Parse lines into a DataFrame
+data = []
+for line in lines:
+    parts = line.strip().split()
+    if len(parts) == 13:
+        year = int(parts[0])
+        monthly_values = [float(val.replace('+', '')) for val in parts[1:]]
+        for month, value in enumerate(monthly_values, 1):
+            data.append({'Date': pd.Timestamp(year=year, month=month, day=1), 'SOI': value})
+
+soi_df = pd.DataFrame(data)
+
+# ✅ Filter from 1960 onwards
+soi_recent = soi_df[soi_df['Date'] >= '1960-01-01']
+
+# Plot the filtered data
+plt.figure(figsize=(16, 5.5))
+plt.plot(soi_recent['Date'], soi_recent['SOI'], linewidth=1)
+# plt.title('Southern Oscillation Index (Monthly Averages, 1960–Present)')
+plt.xlabel('Date')
+plt.ylabel('SOI')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+```
+
+## Stock price of NASDAQ company
+
+```{python}
+# Load the Google stock data
+gafa_df = pd.read_csv("data/gafa_stock.csv")
+
+# Convert date column to datetime
+gafa_df['ds'] = pd.to_datetime(gafa_df['ds'])
+
+# Filter for Google's daily closing prices up to mid-2015
+google_df = gafa_df[gafa_df['unique_id'] == 'GOOG_Close']
+google_filtered = google_df[google_df['ds'] <= '2015-06-30']
+
+# Plot the time series
+plt.figure(figsize=(14, 5.5))
+plt.plot(google_filtered['ds'], google_filtered['y'], linewidth=1)
+# plt.title("Google Daily Closing Stock Price (Start – Mid-2015)")
+plt.xlabel("Date")
+plt.ylabel("Closing Price (USD)")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+```
+
+## First differences of stock price
+
+```{python}
+# Compute the first differences of the closing prices
+google_filtered['Price_Diff'] = google_filtered['y'].diff()
+
+# Plot the first differences
+plt.figure(figsize=(14, 5.5))
+plt.plot(google_filtered['ds'], google_filtered['Price_Diff'], linewidth=1)
+# plt.title("First Differences of Google Daily Closing Stock Price (Start – Mid-2015)")
+plt.xlabel("Date")
+plt.ylabel("Price Change (USD)")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+```
+
+## White noise series
+
+```{python}
+# Generate white noise with the same length as the Google filtered dataset
+np.random.seed(42)
+white_noise = np.random.normal(loc=0, scale=1, size=len(google_filtered))
+
+# Create a time series with the same dates
+white_noise_df = pd.DataFrame({
+    'Date': google_filtered['ds'].values,
+    'White_Noise': white_noise
+})
+
+# Plot the white noise series
+plt.figure(figsize=(14, 5.5))
+plt.plot(white_noise_df['Date'], white_noise_df['White_Noise'], linewidth=1)
+# plt.title("Simulated White Noise Series (Same Length as Google Data)")
+plt.xlabel("Date")
+plt.ylabel("Value")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+```
+
+
+# Statistical models for time series
+
+## Objectives of time series analysis
+
+::: {style="font-size: 90%"}
+* **Description**: What is the structure of the series? Is there a trend? Are there seasonalities in the series?
+
+* **Explanation**: Can we use the variation in one time series to explain the variation in another series, as in a time series regression model?
+
+* **Forecasting**: Given an observed time series, can we forecast future values of that series, e.g., can we the SOI for the next year?
+
+* **Control**: What is the impact of changes in one series on the characteristics of another, e.g., impact of monetary policy on unemployment rate?
+:::
+
+## Correlation in time series
+
+* In contrast to the white noise series, all the series we have seen have some kind structure
+
+* This structure arises from the fact that adjacent observations are correlated, or observations in different (for example) quarters are correlated
+
+* The difference in this correlation structure gives rise to series with different overall structure
+
+* Important to understand how this different correlational structure arises
+
+## Serial correlation
+
+* Two ways in which correlation can be induced in time series
+  1. *Moving average*: a moving average series is constructed by averaging observations in seqential time windows of the same width
+  2. *Autoregression*: in a purely autoregressive series, the current value depends in some way on past values
+  
+## Autoregressive series
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+::: {style="font-size: 85%"}
+* Here's an example of a purely autoregressive series:
+$$
+x_t = 0.5 x_{t-1} -0.30 x_{t-2} + \epsilon_t
+$$
+* The current value of the series depends linearly on the past two values of the series, plus some white noise
+* AR(2) series
+:::
+:::
+
+::: {.column width="50%"}
+```{python}
+from statsmodels.tsa.arima_process import ArmaProcess
+
+# Define stationary AR(2) coefficients: (1 - 0.5L + 0.3L^2)
+ar_params_stationary = np.array([1, -0.5, 0.3])
+ma_params_stationary = np.array([1])  # No MA component
+
+# Create and simulate the AR(2) process
+ar2_stationary_process = ArmaProcess(ar=ar_params_stationary, ma=ma_params_stationary)
+ar2_stationary_series = ar2_stationary_process.generate_sample(nsample=300, scale=1.0, burnin=100, distrvs=np.random.normal)
+
+# Plot the stationary AR(2) series
+plt.figure(figsize=(5.5, 5.5))
+plt.plot(ar2_stationary_series, linewidth=1)
+# plt.title("Simulated Stationary AR(2) Series (ϕ₁ = 0.5, ϕ₂ = -0.3)")
+plt.xlabel("Time")
+plt.ylabel("Value")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+```
+
+:::
+
+::::
+
+## Moving average series
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+::: {style="font-size: 85%"}
+* Here's an example of a purely moving average series:
+$$
+x_t = \epsilon_t + 1.5 \epsilon_{t-1} -0.56 \epsilon_{t-2}
+$$
+
+* The current value of the series is a weighted average of white noise 'shocks'
+* MA(2) series
+:::
+
+:::
+
+::: {.column width="50%"}
+```{python}
+# Define MA(2) coefficients: MA polynomial is (1 + 1.5L - 0.56L^2)
+ar_params = np.array([1])  # No AR component
+ma_params = np.array([1, 1.5, -0.56])
+
+# Create the MA process and simulate
+ma2_process = ArmaProcess(ar=ar_params, ma=ma_params)
+ma2_series = ma2_process.generate_sample(nsample=300, scale=1.0, distrvs=np.random.normal)
+
+# Plot the MA(2) series
+plt.figure(figsize=(5.5, 5.5))
+plt.plot(ma2_series, linewidth=1)
+# plt.title("Simulated MA(2) Series (θ₁ = 1.5, θ₂ = -0.56)")
+plt.xlabel("Time")
+plt.ylabel("Value")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+```
+:::
+
+::::
+
+## ARMA(2, 2) series
+
+```{python}
+# Define stationary AR(2) coefficients: (1 - 0.5L + 0.3L^2)
+ar_params_stationary = np.array([1, -0.5, 0.3])
+ma_params_stationary = np.array([1])  # No MA component
+
+# Create and simulate the AR(2) process
+ar2_stationary_process = ArmaProcess(ar=ar_params_stationary, ma=ma_params_stationary)
+ar2_stationary_series = ar2_stationary_process.generate_sample(nsample=300, scale=1.0, burnin=100, distrvs=np.random.normal)
+
+# Plot the stationary AR(2) series
+plt.figure(figsize=(10, 5))
+plt.plot(ar2_stationary_series, linewidth=1)
+# plt.title("Simulated Stationary AR(2) Series (ϕ₁ = 0.5, ϕ₂ = -0.3)")
+plt.xlabel("Time")
+plt.ylabel("Value")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+```
+<center>
+::: {style="font-size: 50%"}
+$X_t = 0.5 X_{t-1} - 0.3 X_{t-2} + \varepsilon_t + 1.5 \varepsilon_{t-1} - 0.56 \varepsilon_{t-2}$
+:::
+</center>
+
+## Stationarity {.smaller}
+
+* ARMA modelling of time series data can only be applied for series that are *stationary*
+
+* A stationary series is:
+  * roughly horizontal (no trends)
+  * has constant variance
+  
+* Differencing helps to stabilize the mean (removes some types of trends)
+ 
+* Transformations (such as logarithms) help to stabilize the variance
+
+* Identify a nonstationary series by:
+  * plotting the data!
+  * examining the *autocorrelation* function
+  
+# Characterising and identifying time series
+
+## Measures of dependence {.smaller}
+
+- One of the key steps in analysis of time series is to examine the correlation structure of the series by calculating and displaying autocorrelations and \emph{partial} autocorrelations at different lags
+    
+- Recall that covariance and correlation measure the extent of \textbf{linear} association between two variables (e.g., $x$ and $y$ as in linear regression)
+
+- Autocovariance and autocorrelation measure linear relationship between \emph{lagged} values of a time series $\{x_t\}$, e.g., between
+
+    - $x_t$ and $x_{t-1}$
+    - $x_t$ and $x_{t-2}$
+    - $x_t$ and $x_{t-3}$
+    - $\ldots$
+  
+## Example: autocorrelation in SOI series
+
+```{python}
+# Create lagged versions of the SOI series
+soi_df['Lag1'] = soi_df['SOI'].shift(1)
+soi_df['Lag2'] = soi_df['SOI'].shift(2)
+
+# Drop missing values
+soi_lagged = soi_df.dropna()
+
+# Calculate correlations
+corr_lag1 = soi_lagged['SOI'].corr(soi_lagged['Lag1'])
+corr_lag2 = soi_lagged['SOI'].corr(soi_lagged['Lag2'])
+
+# Plot lag 1 scatterplot
+plt.figure(figsize=(12, 5))
+plt.subplot(1, 2, 1)
+sns.scatterplot(x='Lag1', y='SOI', data=soi_lagged, alpha=0.5)
+plt.title(f"Lag 1 Scatterplot\nCorrelation = {corr_lag1:.2f}")
+plt.xlabel("SOI (Lag 1)")
+plt.ylabel("SOI")
+
+# Plot lag 2 scatterplot
+plt.subplot(1, 2, 2)
+sns.scatterplot(x='Lag2', y='SOI', data=soi_lagged, alpha=0.5)
+plt.title(f"Lag 2 Scatterplot\nCorrelation = {corr_lag2:.2f}")
+plt.xlabel("SOI (Lag 2)")
+plt.ylabel("SOI")
+
+plt.tight_layout()
+plt.show()
+```
+
+## SOI series: autocorrelation function
+
+```{python}
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+
+# Filter the SOI series from 1960 onwards
+soi_1960_onward = soi_df[soi_df['Date'] >= '1960-01-01'].dropna()
+
+# Plot ACF separately
+# plt.figure(figsize=(12, 4))
+plot_acf(soi_1960_onward['SOI'], lags=40)
+plt.title("ACF of SOI (1960–Present)")
+plt.tight_layout()
+plt.show()
+```
+
+## Partial autocorrelations
+
+- Correlation between two random variables can sometimes be due to the fact that both variables are correlated with the same third variable 
+
+- In time series, it could be that the correlation between $x_t$ and $x_{t+h}$ is due to the correlation that these variables have with the variables 'in between', i.e., $x_{t+1}, x_{t+1}, \ldots, x_{t+h-1}$
+
+- This gives rise to the notion of a **partial autocorrelation**, which measures the relationship between $x_t$ and $x_{t+h}$ when the effects of the lags in between are removed
+
+## SOI series: partial autocorrelations
+
+```{python}
+# Plot PACF separately
+# plt.figure(figsize=(12, 4))
+plot_pacf(soi_1960_onward['SOI'], lags=40, method='ywm')
+plt.title("PACF of SOI (1960–Present)")
+plt.tight_layout()
+plt.show()
+```
+
+## Identifying time series models {.smaller}
+
+* The shapes of the ACF and PACF give us a clue as to the structure of a stationary time series
+
+* The strategy for identifying the order of an ARMA model would be:
+  * carry out differencing and or transformation to remove trend and/or nonconstant variance
+  * calculate and display the ACF and PACF
+  * interpret the ACF and PACF in order to identify the order of the ARMA(p, q) model
+  * fit the initial model, check diagnostics, and re-fit if necessary
+  * produce $h$-step ahead forecasts and uncertainty intervals
+
+* In contemporary time series analysis, there are now functions to 'automatically' select the 'optimal' ARMA model from which forecasts can be made
+
+# Example
+
+## Exports from Egypt
+
+```{python}
+# Load the uploaded CSV file
+egypt_exports_df = pd.read_csv("data/egypt_exports.csv")
+
+# Plot the time series of exports
+plt.figure(figsize=(12, 5.5))
+plt.plot(egypt_exports_df['ds'], egypt_exports_df['Exports'], marker='o', linestyle='-')
+# plt.title("Exports from Egypt (Arab Rep.) Over Time")
+plt.xlabel("Year")
+plt.ylabel("Exports (% of GDP)")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+```
+
+## Exports: ACF
+
+```{python}
+# Plot ACF with lags=20
+plot_acf(egypt_exports_df['Exports'], lags=20)
+# plt.title("ACF of Egypt's Exports (% of GDP)")
+plt.tight_layout()
+plt.show()
+```
+
+## Exports: PACF
+
+```{python}
+# Plot PACF with lags=20
+plot_pacf(egypt_exports_df['Exports'], lags=20, method='ywm')
+# plt.title("PACF of Egypt's Exports (% of GDP)")
+plt.tight_layout()
+plt.show()
+```
+
+
+## Exports: automatic selection of model
+
+```{python}
+#| eval: false
+from pmdarima import auto_arima
+
+# Fit an ARIMA model using automatic selection
+arima_model = auto_arima(
+    egypt_exports_df['Exports'],
+    seasonal=False,
+    stepwise=True,
+    suppress_warnings=True,
+    error_action='ignore',
+    trace=True
+)
+arima_model.summary()
+```
+
+```{python}
+from statsmodels.tsa.arima.model import ARIMA
+import numpy as np
+
+# Prepare the data
+y = egypt_exports_df['Exports'].dropna().values
+
+# Define range of parameters for grid search
+p_values = range(0, 4)
+d_values = range(0, 2)
+q_values = range(0, 4)
+
+# Perform grid search based on AIC
+best_aic = np.inf
+best_order = None
+best_model = None
+
+for p in p_values:
+    for d in d_values:
+        for q in q_values:
+            try:
+                model = ARIMA(y, order=(p, d, q)).fit()
+                if model.aic < best_aic:
+                    best_aic = model.aic
+                    best_order = (p, d, q)
+                    best_model = model
+            except Exception:
+                continue
+
+# best_order, best_aic
+```
+
+::: {style="font-size: 40%"}
+```{python}
+best_model.summary()
+```
+:::
+
+## Exports: comparing data and fit
+
+```{python}
+# Generate in-sample predictions (fitted values)
+fitted_values = best_model.fittedvalues
+
+# Create a time series index for plotting
+years = egypt_exports_df['ds'].iloc[-len(fitted_values):]  # align with fitted values
+
+# Plot original series and fitted values
+plt.figure(figsize=(12, 5.5))
+plt.plot(egypt_exports_df['ds'], egypt_exports_df['Exports'], label='Original', marker='o')
+plt.plot(years, fitted_values, label='Fitted', linestyle='--', marker='x')
+plt.title("Original vs Fitted Values - ARIMA(2,0,1) Model")
+plt.xlabel("Year")
+plt.ylabel("Exports (% of GDP)")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+```
+
+## Exports: forecasting for next 10 years
+
+```{python}
+# Forecast the next 10 years using the best_model
+forecast_result = best_model.get_forecast(steps=10)
+forecast_mean = forecast_result.predicted_mean
+forecast_ci = forecast_result.conf_int(alpha=0.10)  # 90% prediction intervals
+
+# Generate time index for forecast
+last_year = egypt_exports_df['ds'].iloc[-1]
+forecast_years = np.arange(last_year + 1, last_year + 11)
+
+# If forecast_ci is a NumPy array, use direct indexing
+lower_bounds = forecast_ci[:, 0].astype(float)
+upper_bounds = forecast_ci[:, 1].astype(float)
+forecast_mean_values = forecast_mean.astype(float)
+
+# Plot original data and forecast
+plt.figure(figsize=(12, 5.5))
+plt.plot(egypt_exports_df['ds'], egypt_exports_df['Exports'], label='Original', marker='o')
+plt.plot(forecast_years, forecast_mean_values, label='Forecast', linestyle='--', marker='x')
+plt.fill_between(forecast_years, lower_bounds, upper_bounds,
+                 color='gray', alpha=0.3, label='90% Prediction Interval')
+plt.title("Forecast of Egypt's Exports (% of GDP) for Next 10 Years")
+plt.xlabel("Year")
+plt.ylabel("Exports (% of GDP)")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+```
+
+## Key points
+
+::: {style="font-size:75%"}
+* We have only scratched the surface of time series analysis; there's much more to be said and learned!
+
+* ARMA models can be used to model stationary series; if the series is nonstationary, pre-processing is required, e.g., log transformation to stabilize variance and/or differencing (once, or even twice) to remove linear or quadratic trends
+
+* ACF and PACF of stationary series can be used to estimate an initial ARMA model
+
+* Even with automated model selection methods, there may be more than one fits just as well and produces similar forecasts
+
+* Automated selection methods do not absolve us of the responsibility of carrying out diagnostic checks!
+:::
