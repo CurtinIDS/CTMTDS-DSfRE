@@ -1,0 +1,301 @@
+---
+title: "Logistic Regression"
+format:
+  revealjs:
+    theme: [default, ../assets/custom.scss]
+    footer: "Data Science Transforming Maintenance"
+    logo: ../assets/logo.png
+    menu: true
+    slide-number: true
+    show-side-number: all
+    number-sections: true
+    number-depth: 1
+    include-after-body: ../assets/clean_title_page.html
+    echo: false
+    # argument for reveal-header
+    sc-sb-title: true
+title-slide-attributes:
+  data-background-image: ../assets/title_background.png
+  data-background-size: contain
+  data-background-opacity: "1.0"
+# reveal-header extension
+filters: 
+  - reveal-header
+# argument for reveal-header  
+slide-level: 2    
+jupyter: python3
+---
+
+```{python}
+#| echo: False
+import numpy as np
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+import pandas as pd
+import os
+import seaborn as sns
+import sklearn
+```
+
+## Outline
+
+
+1. Introduction to logistic regresion
+2. Example
+3. Key points
+
+
+# Introduction to logistic regression
+
+## Why logistic regression?
+
+::: {style="font-size: 85%"}
+* In fitting linear regression models, we consider only continuous responses $y$
+* In many other applications, responses may be binary ($0/1$, success/failure, yes/no, dead/alive)
+* Binary categorical responses may also depend on covariates $x_1$, $x_2$, $\ldots$
+  - Disease classification (yes/no) depending on the level of some blood biomarker
+  - Credit risk assessment (good/bad) depending on age, income, credit history
+  - Drug response (yes/no) affected by dosage, age, weight, medical history
+:::
+
+## Example: stillbirth prediction
+
+![](images/Stillbirth.png){fig-align="center" height="450px"}
+
+::: {style="font-size: 50%"}
+[Malacova et al. (2020) _Sci. Rep._, **10**, 5354](https://www.nature.com/articles/s41598-020-62210-9)
+:::
+
+## Example: risk of defaulting
+
+![](images/CC_default.png){fig-align="center" height="475px"}
+
+## Linear regression for binary variables
+
+* Suppose that for predicting whether someone is going to default, we code $y=0$ and $y=1$, for 'No' and 'Yes', respectively
+
+* Why not just use linear regression of $y$ on some covariate $x_1$ and then classify an individual as 'Yes' if $\widehat{y} > 0.5$
+  - We could, but ...
+  - Linear regression might produce probabilities less than zero or greater than one
+  - Logistic regression is more appropriate
+  
+## Linear vs logistic regression
+
+![](images/Lin_vs_log.png){fig-align="center" height="475px"} 
+
+
+## Modelling probabilities
+
+::: {style="font-size: 80%"}
+* Proportions are between zero and one, and the curve appears to be $S$-shaped
+* It looks like we'll have to model the probability of success ('Yes' default) as a nonlinear function of $x_1$, the $i$th individual's credit card balance, e.g., 
+$$
+p_i = f(\beta_0 + \beta_1 x_i),
+$$
+or, alternatively,
+$$
+f^{-1}(p_i) = g(p_i) = \beta_0 + \beta_1 x_i)
+$$
+:::
+
+## Logistic regression
+
+::: {style="font-size: 85%"}
+* A common model for binary data is the **logistic function**, i.e.,
+$$
+p_i = \frac{\exp(\beta_0 + \beta_1 x_i)}{1 + \exp(\beta_0 + \beta_1 x_i)} = \frac{1}{1 + \exp(-\{\beta_0 + \beta_1 x_i\})},
+$$
+or
+$$
+\log\left( \frac{p_i}{1 - p_i} \right) = \beta_0 + \beta_1 x_i
+$$
+
+* The quantity $\log\left( \frac{p_i}{1 - p_i} \right)$ is known as a **logit** and the ratio $\frac{p_i}{1 - p_i}$ is the **odds of success**
+
+:::
+
+## Logistic 'link' function
+
+```{python}
+#| fig-align: center
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Define the range and logistic function
+x = np.linspace(-5, 5, 400)
+p = 1 / (1 + np.exp(-x))
+
+# Create the plot
+plt.figure(figsize=(8, 5))
+plt.plot(x, p, linewidth=2)
+plt.xlabel("value of linear predictor")
+plt.ylabel("p")
+plt.title("Logistic Function")
+plt.grid(True)
+plt.show()
+```
+
+# Example
+
+## Example: risk of defaulting
+
+```{python}
+# Read in data
+df_new = pd.read_csv("data/Default.csv")
+
+# Convert 'default' and 'student' to categorical for plotting
+df_new['default'] = df_new['default'].astype('category')
+df_new['student'] = df_new['student'].astype('category')
+
+# Create the lattice-style plot using seaborn's FacetGrid
+g = sns.FacetGrid(df_new, col="student", hue="default", height=5, aspect=1.2)
+g.map_dataframe(sns.scatterplot, x="income", y="balance", alpha=0.7)
+g.add_legend(title="Default")
+g.set_axis_labels("Income", "Balance")
+g.set_titles(col_template="Student: {col_name}")
+plt.subplots_adjust(top=0.85)
+g.fig.suptitle("Balance vs Income by Student Status and Default")
+plt.show()
+```
+
+## Example: risk of defaulting
+
+```{python}
+# Create a FacetGrid conditioned on 'default', colored by 'student' status
+g = sns.FacetGrid(df_new, col="default", hue="student", height=5, aspect=1.2, palette="Set2")
+g.map_dataframe(sns.scatterplot, x="income", y="balance", alpha=0.7)
+g.add_legend(title="Student")
+g.set_axis_labels("Income", "Balance")
+g.set_titles(col_template="Default: {col_name}")
+plt.subplots_adjust(top=0.85)
+g.fig.suptitle("Balance vs Income by Default Status and Student")
+plt.show()
+```
+
+## Model fitting
+
+::: {style="font-size: 80%"}
+* The estimates of the coefficients are obtained not by least squares, but by the *method of maximum likelihood*
+
+* Coefficients and their standard errors can be interpreted in the same way as we did for linear regression
+
+* The logistic regression model yields predicted probabilities
+  * To compare them to the actual response, we have to convert those predicted probabilities into 'Yes'/'No' based on some cutoff, e.g., 'Yes' if $\widehat{p_i} > 0.5$
+  
+* Model diagnostics not as straightforward as in linear regression
+
+* Assess performance on model using some external test set
+:::
+
+## Example: balance and student status
+
+```{python}
+# Step 1: Stratified split using only NumPy
+# Separate indices by default status
+default_yes_idx = df_new[df_new["default"] == "Yes"].index.to_numpy()
+default_no_idx = df_new[df_new["default"] == "No"].index.to_numpy()
+
+# Determine 20% test size for each group
+np.random.seed(42)
+test_size_yes = int(0.2 * len(default_yes_idx))
+test_size_no = int(0.2 * len(default_no_idx))
+
+# Randomly sample test indices
+test_idx_yes = np.random.choice(default_yes_idx, size=test_size_yes, replace=False)
+test_idx_no = np.random.choice(default_no_idx, size=test_size_no, replace=False)
+test_indices = np.concatenate([test_idx_yes, test_idx_no])
+
+# Determine training indices
+all_indices = np.arange(len(df_new))
+train_indices = np.setdiff1d(all_indices, test_indices)
+
+# Create training and test sets
+train_df = df_new.iloc[train_indices].reset_index(drop=True)
+test_df = df_new.iloc[test_indices].reset_index(drop=True)
+```
+
+
+```{python}
+# Step 2: Fit logistic regression with balance + student
+X_train = pd.get_dummies(train_df[['student']], drop_first=True)
+X_train['balance'] = train_df['balance']
+X_train = sm.add_constant(X_train)
+
+# Cast all columns to float to ensure compatibility with statsmodels
+X_train = X_train.astype(float)
+
+y_train = (train_df['default'] == 'Yes').astype(int)
+
+logit_model_np_split = sm.Logit(y_train, X_train).fit(disp=False)
+```
+
+::: {style="font-size: 45%"}
+```{python}
+# Step 3: Output model summary
+# logit_model_np_split.summary()
+```
+:::
+
+::: {style="font-size: 60%"}
+| Variable | Coef. | Std.Err. | z | p-val | (0.025 | 0.975) |
+|---------------|-----------|----------|----------|------------|----------|----------|
+| Intercept | −10.73 | 0.41 | −26.14 | < 1e−150 | −11.53 | −9.92 |
+| Student | −0.73 | 0.17 | −4.41 | < 0.00001 | −1.06 | −0.41 |
+| Balance | +0.0057 | 0.00026 | +22.25 | < 1e−109 | +0.0052 | +0.0062 |
+:::
+
+## Assessing fit on training set*
+
+```{python}
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, roc_curve, auc
+import matplotlib.pyplot as plt
+
+# Step 1: Predict probabilities on the training set
+train_pred_probs = logit_model_np_split.predict(X_train)
+
+# Step 2: Classify using a 0.5 threshold
+train_pred_labels = (train_pred_probs >= 0.5).astype(int)
+
+# Step 3: Compute confusion matrix
+cm = confusion_matrix(y_train, train_pred_labels)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["No Default", "Default"])
+
+# Plot confusion matrix
+fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+disp.plot(ax=ax[0])
+ax[0].set_title("Confusion Matrix (Training Set)")
+
+# Step 4: Compute and plot ROC curve
+fpr, tpr, thresholds = roc_curve(y_train, train_pred_probs)
+roc_auc = auc(fpr, tpr)
+
+ax[1].plot(fpr, tpr, label=f"ROC curve (AUC = {roc_auc:.2f})")
+ax[1].plot([0, 1], [0, 1], "k--", lw=1)
+ax[1].set_xlim([0.0, 1.0])
+ax[1].set_ylim([0.0, 1.05])
+ax[1].set_xlabel("False Positive Rate")
+ax[1].set_ylabel("True Positive Rate")
+ax[1].set_title("ROC Curve (Training Set)")
+ax[1].legend(loc="lower right")
+
+plt.tight_layout()
+plt.show()
+```
+
+::: {style="font-size: 40%"}
+*You would want to do this on the test set!
+:::
+
+# Key points
+
+## Summary
+
+* Like linear regression, logistic regression is also a 'workhorse' in the data science toolkit
+
+* Many of the methods used for variable selection in large datasets can also be applied to logistic regression
+
+* Diagnostic checking is not as straightforward, so we generally tend to assess models by how well they predict on external test sets
+
+
+* Much more to be said about logistic regression!
